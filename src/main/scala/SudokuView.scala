@@ -5,18 +5,26 @@ import event._
 
 object SudokuView extends Publisher {
 
+  // Events that will published from the View component
   case class PuzzleSolved(grid: Array[Int]) extends event.Event
   case class TimeToSolve(grid: Array[Int]) extends Event
 
-  def updateViewModel(id: Int, value: Int) = {
-    SudokuViewModel.data(id) = value
-  }
-
-  //
+  // Handler for PuzzleSolved Event
   def displaySolution(grid: Array[Array[Int]]): Unit = {
     SudokuViewModel.updateGridAfterSolved(grid)
   }
 
+  // Handler for EditDone event in FiniteDigitField component
+  def updateViewModel(id: Int, value: Int) = {
+    SudokuViewModel.data(id) = value
+  }
+
+  // Handler for ButtonClicked event in SolveButton component
+  def publishButtonClick() = {
+    publish(TimeToSolve(SudokuViewModel.data))
+  }
+
+  // Custom button that triggers publishing an event from SudokuView
   object SolveButton extends Button {
     this.text = "Solve It"
     this.reactions += {
@@ -24,9 +32,6 @@ object SudokuView extends Publisher {
     }
   }
 
-  def publishButtonClick() = {
-    publish(TimeToSolve(SudokuViewModel.data))
-  }
 
   object SudokuViewModel extends Publisher {
     var data = Array.fill[Int](81)(0)
@@ -50,9 +55,13 @@ object SudokuView extends Publisher {
 
     font = new Font("Terminal", 1 ,30)
 
+    // validator runs after a key is typed when these fields have focus
+    // KeyTyped events are ignored if they are not digits or if the
+    // field in focus is already full
     def validator(e : event.KeyTyped): Boolean = {
       return (text.length < 1 && e.char.isDigit)
     }
+
     reactions += {
       case (e : event.KeyTyped) => {
         if(!validator(e)) e.consume

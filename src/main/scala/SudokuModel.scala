@@ -37,10 +37,12 @@ class SudokuModel {
   private def checkRow(row: Int, value: Int): Boolean = {
     grid(row).contains(value)
   }
+
   private def checkColumn(column: Int, value: Int): Boolean = {
     (0 to 8).foreach(row => if(grid(row)(column) == value) return true)
     return false
   }
+
   private def checkBlock(row: Int, column: Int, value: Int): Boolean = {
     (0 to 2).foreach(blockRow => {
       val rowOffset = (row / 3) * 3
@@ -56,7 +58,6 @@ class SudokuModel {
     !checkColumn(coords._2, value) &&
       !checkRow(coords._1, value) &&
       !checkBlock(coords._1, coords._2, value)
-
 
   // Mutually recursive with nextValue function
   // mutualBacktrack determines which entries to test values in

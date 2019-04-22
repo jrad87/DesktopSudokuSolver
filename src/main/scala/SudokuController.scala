@@ -12,7 +12,6 @@ object SudokuController extends SimpleSwingApplication {
   // Get events published by the view
   listenTo(SudokuView)
 
-
   val model = new SudokuModel()
 
   // Link events from the view to appropriate handlers in the model
