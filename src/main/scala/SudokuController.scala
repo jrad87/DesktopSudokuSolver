@@ -1,10 +1,11 @@
+package SudokuController
 import SudokuView._
 import SudokuModel._
 
 import scala.swing._
 import scala.swing.event._
 
-object SudokuController extends SimpleSwingApplication {
+class SudokuController(val sudokuModel: SudokuModel) extends SimpleSwingApplication {
 
   // Load the main view and attach to the application
   override val top = SudokuView.main
@@ -12,13 +13,11 @@ object SudokuController extends SimpleSwingApplication {
   // Get events published by the view
   listenTo(SudokuView)
 
-  val model = new SudokuModel()
-
   // Link events from the view to appropriate handlers in the model
   reactions += {
     case SudokuView.TimeToSolve(grid) => {
-      model.setGrid(grid)
-      SudokuView.displaySolution(model.solve())
+      sudokuModel.setGrid(grid)
+      SudokuView.displaySolution(sudokuModel.solve())
     }
   }
 }
