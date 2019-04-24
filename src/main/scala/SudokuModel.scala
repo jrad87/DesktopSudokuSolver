@@ -18,6 +18,10 @@ class SudokuModel {
     grid
   }
 
+  def resetGrid() = {
+    grid = new Array[Array[Int]](9)
+  }
+
   def printGrid() = grid.foreach(row => {
     println(row.foldLeft[String]("")((s,x) => s + s"| ${x} |"))
   })
@@ -31,6 +35,9 @@ class SudokuModel {
       })
       .foldLeft[String]("\n")((s, x) => s + s"${x}\n")
 
+
+  // For future use
+  // For raising notifications if the algorithm ended without solving all entries
   private var isSolved: Boolean = false
   private def getVal(row: Int, column: Int): Int = grid(row)(column)
   private def getVal(coords: (Int, Int)): Int = grid(coords._1)(coords._2)

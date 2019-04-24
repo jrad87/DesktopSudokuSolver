@@ -6,8 +6,9 @@ import event._
 object SudokuView extends Publisher {
 
   // Events that will published from the View component
-  case class PuzzleSolved(grid: Array[Int]) extends event.Event
+  case class SetGrid(grid: Array[Int]) extends Event
   case class TimeToSolve(grid: Array[Int]) extends Event
+  case class ResetPuzzle() extends Event
 
   // Handler for PuzzleSolved Event
   def displaySolution(grid: Array[Array[Int]]): Unit = {
@@ -20,15 +21,28 @@ object SudokuView extends Publisher {
   }
 
   // Handler for ButtonClicked event in SolveButton component
-  def publishButtonClick() = {
+  def emitTimeToSolve() = {
     publish(TimeToSolve(SudokuViewModel.data))
   }
+
+  def emitResetEvent() = {
+    SudokuViewModel.reset()
+    publish(ResetPuzzle())
+  }
+
 
   // Custom button that triggers publishing an event from SudokuView
   object SolveButton extends Button {
     this.text = "Solve It"
     this.reactions += {
-      case (e: ButtonClicked) => publishButtonClick()
+      case (e: ButtonClicked) => emitTimeToSolve()
+    }
+  }
+
+  object ResetButton extends Button {
+    this.text = "Reset"
+    this.reactions += {
+      case (e: ButtonClicked) => emitResetEvent()
     }
   }
 
@@ -38,7 +52,11 @@ object SudokuView extends Publisher {
     override def toString = data.mkString(", ")
     def updateGridAfterSolved(grid: Array[Array[Int]]): Unit = {
       data = grid.flatten
-      publish(PuzzleSolved(data))
+      publish(SetGrid(data))
+    }
+    def reset():Unit = {
+      data = Array.fill[Int](81)(0)
+      publish(SetGrid(data))
     }
   }
 
@@ -70,8 +88,9 @@ object SudokuView extends Publisher {
       case e: event.EditDone => {
         if(this.text != "") updateViewModel(id, Integer.parseInt(this.text))
       }
-      case PuzzleSolved(grid) => {
-        this.text = grid(id).toString
+      case SetGrid(grid) => {
+        val num = grid(id)
+        this.text = if ( 0 < num) num.toString else ""
       }
     }
   }
@@ -133,7 +152,7 @@ object SudokuView extends Publisher {
       add(new SudokuSector(2, 1), constraints(1,2, ipadx=10, ipady=10))
       add(new SudokuSector(2, 2), constraints(2,2, ipadx=10, ipady=10))
       add(SolveButton, constraints(0, 3, fill = GridBagPanel.Fill.Both))
-
+      add(ResetButton, constraints(1, 3, fill = GridBagPanel.Fill.Both))
     }
   }
 }

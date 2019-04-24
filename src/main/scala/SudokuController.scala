@@ -19,5 +19,8 @@ class SudokuController(val sudokuModel: SudokuModel) extends SimpleSwingApplicat
       sudokuModel.setGrid(grid)
       SudokuView.displaySolution(sudokuModel.solve())
     }
+    case SudokuView.ResetPuzzle() => {
+      sudokuModel.resetGrid()
+    }
   }
 }
